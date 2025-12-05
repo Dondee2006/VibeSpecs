@@ -1,0 +1,47 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  plan      String   @default("free") // free, pro, team
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  projects  Project[]
+}
+
+model Project {
+  id        String   @id @default(uuid())
+  name      String
+  summary   String
+  data      String   // JSON string of PRDResponse
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Template {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  content     String   // JSON structure or text
+  category    String
+  createdAt   DateTime @default(now())
+}
+
+model BillingPlan {
+  id       String   @id @default(uuid())
+  name     String   @unique
+  price    Float
+  features String   // JSON array of strings
+}
